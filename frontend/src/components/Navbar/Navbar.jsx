@@ -32,7 +32,12 @@ export const Navbar = () => {
             <li ><NavLink  style={navLinkStyles} to='/kids'>kids</NavLink></li>
         </ul>
         <div className="nav-login-cart">
-          <NavLink style={navLinkStyles} to='/login'><button>Login</button></NavLink>  
+          {
+            localStorage.getItem('auth-token')
+            ? <button onClick={()=>{localStorage.removeItem('auth-token');window.location.replace('/')}}>Logout</button>
+            :<NavLink style={navLinkStyles} to='/login'><button>Login</button></NavLink>  
+          }
+          
            <NavLink style={navLinkStyles} to='/cart'><img src={cart_icon} alt="" /></NavLink> 
             <div className="nav-cart-count">{getTotalcartItem()}</div>
         </div>
