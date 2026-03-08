@@ -3,8 +3,7 @@ import { ShopContext } from '../context/ShopContext'
 import { useParams } from 'react-router-dom';
 import Breadcrum from '../components/Breadcrum/Breadcrum';
 import { ProductDisplay } from '../components/ProductDisplay/ProductDisplay';
-import { Description } from '../components/Description/Description';
-import ReletedProduct from '../components/ReletedProduct/ReletedProduct';
+import { Description } from '../components/Description/Description'
 
 export const Product = () => {
   const {all_product}=useContext(ShopContext);
