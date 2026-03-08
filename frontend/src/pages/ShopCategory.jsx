@@ -1,4 +1,4 @@
-import React, { useCallback, useContext } from 'react'
+import React, {  useContext } from 'react'
 import './css/Shopcategory.css'
 import { ShopContext } from '../context/ShopContext'
 import dropdown_icon from '../components/Assets/dropdown_icon.png'

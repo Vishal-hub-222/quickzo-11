@@ -15,13 +15,13 @@ const ShopContextProvider = (props)=>{
     
 const [cardItems,setCartIems]=useState(getDefaultCart());
 useEffect(()=>{
-fetch('http://quickzo-backend.onrender.com/allproducts')
+fetch('https://quickzo-backend.onrender.com/allproducts')
 .then((response)=>response.json())
 .then((data)=>setall_Product(data))
 
 if(localStorage.getItem('auth-token'))
 {
-    fetch('http://quickzo-backend.onrender.com/getcart',{
+    fetch('https://quickzo-backend.onrender.com/getcart',{
         method:'POST',
         headers:{
             Accept:'application/form-data',
@@ -37,7 +37,7 @@ const addToCart = (itemId) => {
     setCartIems((prev)=>({...prev ,[itemId]:prev[itemId]+1}));
 
     if(localStorage.getItem('auth-token')){
-        fetch('http://quickzo-backend.onrender.com/addtocart',{
+        fetch('https://quickzo-backend.onrender.com/addtocart',{
             method:"POST",
             headers:{
                 Accept:'application/json',
@@ -55,7 +55,7 @@ const removefromCart=(itemId)=>{
     setCartIems((prev)=>({...prev ,[itemId]:prev[itemId]-1}));
     
     if(localStorage.getItem('auth-token')){
-        fetch('http://quickzo-backend.onrender.com/removefromcart',{
+        fetch('https://quickzo-backend.onrender.com/removefromcart',{
             method:"POST",
             headers:{
                 Accept:'application/json',

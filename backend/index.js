@@ -13,10 +13,15 @@ const Product = require("./models/imageproduct");
 const User = require("./models/usercreation");
 
 app.use(express.json());
-app.use(cors());
 app.use(cors({
-  origin: "https://quickzo.vercel.app"
+  origin: [
+    "http://localhost:3000",
+    "http://192.168.137.1:3000",
+    "https://quickzo.vercel.app"
+  ],
+  credentials: true
 }));
+
 //DAtabase connection With MongoDB
 main()
 .then(()=>{

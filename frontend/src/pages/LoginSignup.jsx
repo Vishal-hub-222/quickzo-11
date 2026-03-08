@@ -17,7 +17,7 @@ export const LoginSignup = () => {
   }
   const Login= async ()=>{
  let responseData;
-   await fetch('http://quickzo-backend.onrender.com/login',{
+   await fetch('https://quickzo-backend.onrender.com/login',{
     method:"POST",
     headers:{
       Accept:'application/form-data',
@@ -36,7 +36,7 @@ export const LoginSignup = () => {
   }
   const SignUp=async ()=>{
    let responseData;
-   await fetch('http://quickzo-backend.onrender.com/signup',{
+   await fetch('https://quickzo-backend.onrender.com/signup',{
     method:"POST",
     headers:{
       Accept:'application/form-data',
