@@ -15,11 +15,11 @@ const User = require("./models/usercreation");
 app.use(express.json());
 app.use(cors({
   origin: [
-    "http://localhost:3000",
     "http://localhost:5173",
-    "http://192.168.137.1:3000",
-    "https://quickzo.vercel.app"
+    "http://localhost:3000",
+    "https://quickzo-222-f5nb.vercel.app"
   ],
+  methods: ["GET", "POST", "PUT", "DELETE"],
   credentials: true
 }));
 
