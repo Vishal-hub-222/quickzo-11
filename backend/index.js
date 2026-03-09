@@ -16,9 +16,8 @@ app.use(express.json());
 app.use(cors({
   origin: [
     "http://localhost:5173",
-    "http://localhost:3000",
+  " http://localhost:5174",
     "https://quickzo-2.vercel.app",
-    "https://quickzo-222-f5nb.vercel.app"
   ],
   methods: ["GET", "POST", "PUT", "DELETE"],
   credentials: true
