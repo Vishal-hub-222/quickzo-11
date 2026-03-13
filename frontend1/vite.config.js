@@ -1,8 +1,8 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
-// https://vite.dev/config/
 export default defineConfig({
+  base: '/', // Use '/' if deploying to root. Change to '/Quickzo/' if deployed under subpath
   plugins: [
     react({
       babel: {
