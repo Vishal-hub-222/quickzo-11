@@ -4,7 +4,7 @@ import cross_icon from '../../Assets/cross_icon.png'
 export const Listproduct = () => {
   const[allproducts,setallproducts]=useState([])
   const fetchInfo=async ()=>{
-    await fetch('https://quickzo-backend.onrender.com/allproducts')
+    await fetch('https://quickzo-11.onrender.com/allproducts')
     .then((resp)=>resp.json())
     .then((data)=>{setallproducts(data)})
   }
@@ -14,7 +14,7 @@ export const Listproduct = () => {
 
   const removeProduct = async (id) => {
     console.log(id)
-  await fetch(`https://quickzo-backend.onrender.com/deleteproduct/${id}`, {
+  await fetch(`https://quickzo-11.onrender.com/deleteproduct/${id}`, {
     method: "DELETE",
   })
   .then((resp) => resp.json())

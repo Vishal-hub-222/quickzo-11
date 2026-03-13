@@ -4,7 +4,7 @@ import {Item }from '../Item/Item'
 export const Popular = () => {
     const [data_product,setdata_product]=useState([]);
     useEffect(()=>{
-  fetch('https://quickzo-backend.onrender.com/popularinwoman')
+  fetch('https://quickzo-11.onrender.com/popularinwoman')
   .then((response)=>response.json())
   .then((data)=>setdata_product(data))
     },[])

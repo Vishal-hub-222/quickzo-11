@@ -27,7 +27,7 @@ export const Addproduct = () => {
     let formData= new FormData();
     formData.append('product',image);
 
-    await fetch('https://quickzo-backend.onrender.com/upload',{
+    await fetch('https://quickzo-11.onrender.com/upload',{
       method:'POST',
       headers:{
         Accept:'application/json',
@@ -41,7 +41,7 @@ export const Addproduct = () => {
    {
     product.image=responseData.image_url;
     console.log(product)
-    await fetch('https://quickzo-backend.onrender.com/addproduct',{
+    await fetch('https://quickzo-11.onrender.com/addproduct',{
       method:"POST",
       headers:{
         Accept:'application/json',
