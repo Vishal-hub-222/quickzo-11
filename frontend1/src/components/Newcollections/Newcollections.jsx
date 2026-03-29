@@ -4,7 +4,7 @@ import { Item } from '../Item/Item'
 export const Newcollections = () => {
   const [new_collection,setNewcollection]=useState([]);
   useEffect(()=>{
-    fetch('https://quickzo-11.onrender.com/newcollection')
+    fetch('https://quickzo.onrender.com/newcollection')
     .then((response)=>response.json())
     .then((data)=>setNewcollection(data));
   },[])

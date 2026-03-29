@@ -17,12 +17,12 @@ const ShopContextProvider = (props) => {
 
   useEffect(() => {
 
-    fetch('https://quickzo-11.onrender.com/allproducts')
+    fetch('https://quickzo.onrender.com/allproducts')
       .then((response) => response.json())
       .then((data) => setall_Product(data));
 
     if (localStorage.getItem('auth-token')) {
-      fetch('https://quickzo-11.onrender.com/getcart', {
+      fetch('https://quickzo.onrender.com/getcart', {
         method: 'POST',
         headers: {
           Accept: 'application/json',
@@ -41,7 +41,7 @@ const ShopContextProvider = (props) => {
     setCartItems((prev) => ({ ...prev, [itemId]: prev[itemId] + 1 }));
 
     if (localStorage.getItem('auth-token')) {
-      fetch('https://quickzo-11.onrender.com/addtocart', {
+      fetch('https://quickzo.onrender.com/addtocart', {
         method: "POST",
         headers: {
           Accept: 'application/json',
@@ -58,7 +58,7 @@ const ShopContextProvider = (props) => {
     setCartItems((prev) => ({ ...prev, [itemId]: prev[itemId] - 1 }));
 
     if (localStorage.getItem('auth-token')) {
-      fetch('https://quickzo-11.onrender.com/removefromcart', {
+      fetch('https://quickzo.onrender.com/removefromcart', {
         method: "POST",
         headers: {
           Accept: 'application/json',
