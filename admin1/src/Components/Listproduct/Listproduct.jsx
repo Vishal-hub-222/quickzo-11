@@ -1,12 +1,33 @@
 import React, { useEffect, useState } from 'react'
 import './Listproduct.css'
 import cross_icon from '../../Assets/cross_icon.png'
+
+const BACKEND_URL = 'https://quickzo.onrender.com';
+
 export const Listproduct = () => {
   const[allproducts,setallproducts]=useState([])
-  const fetchInfo=async ()=>{
-    await fetch('https://quickzo.onrender.com/allproducts')
-    .then((resp)=>resp.json())
-    .then((data)=>{setallproducts(data)})
+  const [isLoading, setIsLoading] = useState(true);
+  const [loadError, setLoadError] = useState('');
+
+  const fetchInfo = async () => {
+    setIsLoading(true);
+    setLoadError('');
+
+    try {
+      const response = await fetch(`${BACKEND_URL}/allproducts`);
+      const data = await response.json();
+
+      if (!response.ok || !Array.isArray(data)) {
+        throw new Error('Unable to connect to the product server.');
+      }
+
+      setallproducts(data);
+    } catch {
+      setallproducts([]);
+      setLoadError('Unable to connect to the product server.');
+    } finally {
+      setIsLoading(false);
+    }
   }
   useEffect(()=>{
     fetchInfo()
@@ -14,7 +35,7 @@ export const Listproduct = () => {
 
   const removeProduct = async (id) => {
     console.log(id)
-  await fetch(`https://quickzo.onrender.com/deleteproduct/${id}`, {
+  await fetch(`${BACKEND_URL}/deleteproduct/${id}`, {
     method: "DELETE",
   })
   .then((resp) => resp.json())
@@ -30,6 +51,8 @@ export const Listproduct = () => {
   return (
    <div className="list-product">
     <h1>All Product List </h1>
+    {isLoading && <p role="status">Loading products...</p>}
+    {loadError && <p className="listproduct-error" role="alert">{loadError}</p>}
     <div className="listproduct-format-main">
       <p>Products</p>
       <p>Title</p>
@@ -40,7 +63,7 @@ export const Listproduct = () => {
     </div>
     <div className="listproduct-allproducts">
       <hr />
-     {allproducts.map((product,index)=>{
+     {!isLoading && !loadError && allproducts.map((product,index)=>{
       return <> <div key={index} className='listproduct-format-main listproduct-format'>
              <img className='vishal' src={product.image} alt="" />
             <p>{product.name}</p>

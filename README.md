@@ -49,6 +49,16 @@ quickzo-11/
 
 The API will run on the port defined in `PORT`.
 
+### Deployment environment checklist
+
+Before deploying the backend, configure these environment variables in the hosting
+provider (for example, Render): `PORT`, `MONGO_URL`, `CLOUD_NAME`,
+`CLOUD_API_KEY`, and `CLOUD_API_SECRET`. Configure `OPENAI_API_KEY` as well when
+the AI product-description feature is enabled; `OPENAI_MODEL` is optional. The
+server listens on `process.env.PORT`, so the deployed service must provide a
+valid `PORT` value. See [`backend/.env.example`](backend/.env.example) for the
+complete variable names without exposing any credentials.
+
 ## 🛒 Frontend setup (`/frontend1`)
 
 1. Install dependencies:
