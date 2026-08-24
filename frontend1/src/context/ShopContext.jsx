@@ -38,7 +38,7 @@ const ShopContextProvider = (props) => {
 
   const addToCart = (itemId) => {
 
-    setCartItems((prev) => ({ ...prev, [itemId]: prev[itemId] + 1 }));
+    setCartItems((prev) => ({ ...prev, [itemId]: (prev[itemId] ?? 0) + 1 }));
 
     if (localStorage.getItem('auth-token')) {
       fetch('https://quickzo.onrender.com/addtocart', {
@@ -55,7 +55,7 @@ const ShopContextProvider = (props) => {
 
   const removefromCart = (itemId) => {
 
-    setCartItems((prev) => ({ ...prev, [itemId]: prev[itemId] - 1 }));
+    setCartItems((prev) => ({ ...prev, [itemId]: Math.max((prev[itemId] ?? 0) - 1, 0) }));
 
     if (localStorage.getItem('auth-token')) {
       fetch('https://quickzo.onrender.com/removefromcart', {

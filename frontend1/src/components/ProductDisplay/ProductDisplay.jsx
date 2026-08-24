@@ -6,6 +6,15 @@ import { ShopContext } from '../../context/ShopContext'
 export const ProductDisplay = (props) => {
     const {product}=props;
     const{addToCart}=useContext(ShopContext)
+
+    if (!product) {
+      return <div>Loading product details...</div>;
+    }
+
+    const handleAddToCart = () => {
+      addToCart(product.id);
+    };
+
   return (
    <div className="productdisplay">
       <div className="productdisplay-left">
@@ -57,7 +66,7 @@ export const ProductDisplay = (props) => {
             <div>XXL</div>
         </div>
       </div>
-      <button onClick={()=>{addToCart(product.id)}}>ADD TO CART</button>
+      <button type="button" onClick={handleAddToCart}>ADD TO CART</button>
       <p className='productdisplay-right-category'>
         <span>Category :</span>
         Women , T-Shirt,Crop top 
