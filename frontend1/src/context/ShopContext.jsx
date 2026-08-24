@@ -1,6 +1,5 @@
-import React, { createContext, useEffect, useState } from "react";
-
-export const ShopContext = createContext(null);
+import React, { useCallback, useEffect, useState } from "react";
+import { ShopContext } from './ShopContextValue';
 
 const getDefaultCart = () => {
   let cart = {};
@@ -13,13 +12,34 @@ const getDefaultCart = () => {
 const ShopContextProvider = (props) => {
 
   const [all_product, setall_Product] = useState([]);
+  const [isProductsLoading, setIsProductsLoading] = useState(true);
+  const [productsError, setProductsError] = useState("");
   const [cartItems, setCartItems] = useState(getDefaultCart());
+
+  const loadProducts = useCallback(async () => {
+    setIsProductsLoading(true);
+    setProductsError("");
+
+    try {
+      const response = await fetch('https://quickzo.onrender.com/allproducts');
+
+      if (!response.ok) {
+        throw new Error(`Request failed with status ${response.status}`);
+      }
+
+      const data = await response.json();
+      setall_Product(data);
+    } catch (error) {
+      console.error('Unable to load products:', error);
+      setProductsError('We could not load products. Please try again.');
+    } finally {
+      setIsProductsLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
 
-    fetch('https://quickzo.onrender.com/allproducts')
-      .then((response) => response.json())
-      .then((data) => setall_Product(data));
+    loadProducts();
 
     if (localStorage.getItem('auth-token')) {
       fetch('https://quickzo.onrender.com/getcart', {
@@ -34,7 +54,7 @@ const ShopContextProvider = (props) => {
         .then((data) => setCartItems(data));
     }
 
-  }, []);
+  }, [loadProducts]);
 
   const addToCart = (itemId) => {
 
@@ -104,6 +124,9 @@ const ShopContextProvider = (props) => {
 
   const contextvalue = {
     all_product,
+    isProductsLoading,
+    productsError,
+    loadProducts,
     cartItems,
     addToCart,
     removefromCart,

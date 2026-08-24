@@ -1,11 +1,25 @@
 import React, { useContext } from 'react'
 import './Cartitems.css'
-import { ShopContext } from '../../context/ShopContext'
+import { ShopContext } from '../../context/ShopContextValue.js'
 import remove_icon from '../Assets/cart_cross_icon.png'
+import { Loading } from '../Loading/Loading'
 
 function Cartitems() {
 
-const { all_product, cartItems, removefromCart, getTotalCartAmount } = useContext(ShopContext);
+const { all_product, cartItems, removefromCart, getTotalCartAmount, isProductsLoading, productsError, loadProducts } = useContext(ShopContext);
+
+if (isProductsLoading) {
+return <Loading />;
+}
+
+if (productsError) {
+return (
+<div className="cartitems-feedback" role="alert">
+<p>{productsError}</p>
+<button type="button" onClick={loadProducts}>Try again</button>
+</div>
+);
+}
 
 return (
 <div className="cartitems">

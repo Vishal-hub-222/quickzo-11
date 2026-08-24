@@ -157,3 +157,16 @@
     }
 
 }
+.cartitems-feedback {
+    margin: 40px auto;
+    text-align: center;
+    color: #555;
+}
+
+.cartitems-feedback button {
+    border: none;
+    padding: 10px 20px;
+    background: #ff4141;
+    color: white;
+    cursor: pointer;
+}

@@ -3,7 +3,7 @@ import './Navbar.css'
 import logo from '../Assets/logo.png'
 import cart_icon from '../Assets/cart_icon.png'
 import { NavLink } from 'react-router-dom'
-import { ShopContext } from '../../context/ShopContext'
+import { ShopContext } from '../../context/ShopContextValue.js'
 import nav_dorpdown from '../Assets/nav_dropdown.png'
 export const Navbar = () => {
   const {getTotalcartItem}=useContext(ShopContext)
@@ -44,4 +44,3 @@ export const Navbar = () => {
     </div>
   )
 }
-
