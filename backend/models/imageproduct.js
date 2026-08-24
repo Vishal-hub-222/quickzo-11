@@ -25,6 +25,11 @@ const ShemaProduct = new Schema({
         type:Number,
         required:true,
     },
+    description:{
+        type:String,
+        required:true,
+        trim:true,
+    },
     date:{
         type:Date,
         default:Date.now,  
