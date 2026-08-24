@@ -21,11 +21,12 @@ export const Addproduct = () => {
 
   const imagehandler = (e) => {
     setimage(e.target.files[0]);
+    setFormError('');
   };
 
   const chengeHandler = (e) => {
     setproductDetails({ ...productDetails, [e.target.name]: e.target.value });
-    if (e.target.name === 'description') {
+    if (e.target.name === 'description' || e.target.name === 'name') {
       setFormError('');
     }
   };
@@ -75,13 +76,22 @@ export const Addproduct = () => {
   };
 
   const Add_product = async () => {
+    if (!productDetails.name.trim()) {
+      setFormError('Enter a product name before saving.');
+      return;
+    }
+
+    if (!image) {
+      setFormError('Select a product image before saving.');
+      return;
+    }
+
     if (!productDetails.description.trim()) {
       setFormError('A product description is required before saving.');
       return;
     }
 
     setFormError('');
-    let responseData;
     const product = { ...productDetails, description: productDetails.description.trim() };
 
     const formData = new FormData();
@@ -95,10 +105,10 @@ export const Addproduct = () => {
         },
         body: formData,
       });
-      responseData = await uploadResponse.json();
+      const responseData = await uploadResponse.json();
 
-      if (!uploadResponse.ok || !responseData.success) {
-        throw new Error('Image upload failed.');
+      if (!uploadResponse.ok || !responseData.success || !responseData.image_url) {
+        throw new Error('Unable to connect to the product server.');
       }
 
       product.image = responseData.image_url;
@@ -113,12 +123,12 @@ export const Addproduct = () => {
       const data = await productResponse.json();
 
       if (!productResponse.ok || !data.success) {
-        throw new Error(data.message || 'Unable to add the product.');
+        throw new Error('Unable to connect to the product server.');
       }
 
       alert('Product added');
-    } catch (error) {
-      setFormError(error.message || 'Unable to add the product. Please try again.');
+    } catch {
+      setFormError('Unable to connect to the product server.');
     }
   };
 

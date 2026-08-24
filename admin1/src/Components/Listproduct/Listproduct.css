@@ -39,6 +39,10 @@
 {
     overflow-y: auto;
 }
+.listproduct-error{
+    color: #bf1f1f;
+    font-size: 14px;
+}
 @media (max-width:800px) {
     .list-product{
         box-sizing: border-box;
