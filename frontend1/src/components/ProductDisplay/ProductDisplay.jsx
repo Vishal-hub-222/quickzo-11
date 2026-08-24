@@ -52,8 +52,9 @@ export const ProductDisplay = (props) => {
                 ${product.new_price}
             </div>
         </div>
-        <div className="productdisplay-right-description">Lorem ipsum dolor sit amet consectetur adipisicing elit. Ducimus quos consequuntur fuga iure modi dolores saepe a
-        Excepturi, quia. Ducimus omnis enim iusto? Laudantium quasi recusandae officia dolore, reiciendis assumenda inventore optio autem nisi voluptates consectetur exercitationem accusamus nesciunt id sed eos porro officiis eveniet harum! Accusantium?</div>
+        <div className="productdisplay-right-description">
+          {product.description || 'A product description is not available for this legacy item.'}
+        </div>
         
       
       <div className="productdisplay-right-size">

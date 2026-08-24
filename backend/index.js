@@ -65,10 +65,80 @@ app.post("/upload", upload.single("product"), (req,res)=>{
   });
 });
 
+// Generate a factual product description. The API key remains server-side.
+app.post('/generate-product-description', async (req, res) => {
+  const { name, category, new_price, old_price, keywords } = req.body;
+
+  if (!name?.trim() || !category?.trim()) {
+    return res.status(400).json({
+      success: false,
+      message: 'Product name and category are required.',
+    });
+  }
+
+  if (!process.env.OPENAI_API_KEY) {
+    console.error('OPENAI_API_KEY is not configured.');
+    return res.status(503).json({
+      success: false,
+      message: 'Description generation is not currently available.',
+    });
+  }
+
+  const productDetails = JSON.stringify({
+    name: name.trim(),
+    category: category.trim(),
+    new_price,
+    old_price,
+    keywords: keywords || undefined,
+  });
+  const prompt = `Write one short product description (2-3 sentences) using only the supplied product details. Be accurate and concise. Do not invent materials, features, specifications, sizes, benefits, availability, or other facts. Do not make pricing, discount, value, or promotional claims, including any mention of prices. If a detail is missing, leave it out. Return only the description text.\n\nProduct details: ${productDetails}`;
+
+  try {
+    const openaiResponse = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: process.env.OPENAI_MODEL || 'gpt-4o-mini',
+        messages: [{ role: 'user', content: prompt }],
+        temperature: 0.2,
+        max_tokens: 120,
+      }),
+    });
+    const openaiData = await openaiResponse.json();
+    const description = openaiData.choices?.[0]?.message?.content?.trim();
+
+    if (!openaiResponse.ok || !description) {
+      console.error('OpenAI description generation failed:', openaiData.error?.message || openaiResponse.statusText);
+      return res.status(502).json({
+        success: false,
+        message: 'Unable to generate a product description.',
+      });
+    }
+
+    return res.json({ success: true, description });
+  } catch (error) {
+    console.error('OpenAI description generation failed:', error.message);
+    return res.status(502).json({
+      success: false,
+      message: 'Unable to generate a product description.',
+    });
+  }
+});
+
 
 // Add Product
 app.post('/addproduct', async(req,res)=>{
   try{
+    if (!req.body.description?.trim()) {
+      return res.status(400).json({
+        success: false,
+        message: 'A product description is required.',
+      });
+    }
+
     let products = await Product.find({});
     let id;
 
@@ -80,7 +150,7 @@ app.post('/addproduct', async(req,res)=>{
       id = 1;
     }
 
-    const product = new Product(req.body);
+    const product = new Product({ ...req.body, description: req.body.description.trim() });
     product.id = id;
 
     await product.save();
