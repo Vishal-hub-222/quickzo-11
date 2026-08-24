@@ -26,6 +26,18 @@
     row-gap: 80px;
 
 }
+.shopcategory-feedback {
+    margin: 40px auto;
+    text-align: center;
+    color: #555;
+}
+.shopcategory-feedback button {
+    border: none;
+    padding: 10px 20px;
+    background: #ff4141;
+    color: white;
+    cursor: pointer;
+}
 .shopcategory-loadmore{
     display: flex;
     justify-content: center;

@@ -1,10 +1,11 @@
 import React, {  useContext } from 'react'
 import './css/Shopcategory.css'
-import { ShopContext } from "../context/ShopContext";
+import { ShopContext } from "../context/ShopContextValue.js";
 import dropdown_icon from "../components/Assets/dropdown_icon.png";
 import {Item} from "../components/Item/Item";
+import { Loading } from '../components/Loading/Loading';
 export const ShopCategory = (props) => {
-  const {all_product}=useContext(ShopContext);
+  const { all_product, isProductsLoading, productsError, loadProducts } = useContext(ShopContext);
   return (
     
     <div className="shop-category">
@@ -17,6 +18,14 @@ export const ShopCategory = (props) => {
             Sort by <img src={dropdown_icon} alt="" />
           </div>
         </div>
+        {isProductsLoading ? (
+          <Loading />
+        ) : productsError ? (
+          <div className="shopcategory-feedback" role="alert">
+            <p>{productsError}</p>
+            <button type="button" onClick={loadProducts}>Try again</button>
+          </div>
+        ) : (
         <div className="shopcategory-products">
           {all_product.map((item ,i)=>{
             if(props.category===item.category)
@@ -28,6 +37,7 @@ export const ShopCategory = (props) => {
             }
           })}
         </div>
+        )}
         <div className="shopcategory-loadmore">
           Explore More
         </div>
