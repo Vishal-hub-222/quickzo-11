@@ -1,14 +1,14 @@
 import React, { useState } from 'react'
 import "./Addproduct.css"
 import upload_area from '../../Assets/upload_area.svg'
-
-const BACKEND_URL = 'https://quickzo.onrender.com';
+import { API_URL, getResponseData } from '../../api';
 
 export const Addproduct = () => {
   const [image, setimage] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
   const [generationError, setGenerationError] = useState('');
   const [formError, setFormError] = useState('');
+  const [isSaving, setIsSaving] = useState(false);
 
   const [productDetails, setproductDetails] = useState({
     name: '',
@@ -44,7 +44,7 @@ export const Addproduct = () => {
     setIsGenerating(true);
 
     try {
-      const response = await fetch(`${BACKEND_URL}/generate-product-description`, {
+      const response = await fetch(`${API_URL}/generate-product-description`, {
         method: 'POST',
         headers: {
           Accept: 'application/json',
@@ -57,9 +57,9 @@ export const Addproduct = () => {
           old_price: productDetails.old_price,
         }),
       });
-      const data = await response.json();
+      const data = await getResponseData(response);
 
-      if (!response.ok || !data.description) {
+      if (!data?.description) {
         throw new Error(data.message || 'Unable to generate a description.');
       }
 
@@ -92,27 +92,28 @@ export const Addproduct = () => {
     }
 
     setFormError('');
+    setIsSaving(true);
     const product = { ...productDetails, description: productDetails.description.trim() };
 
     const formData = new FormData();
     formData.append('product', image);
 
     try {
-      const uploadResponse = await fetch(`${BACKEND_URL}/upload`, {
+      const uploadResponse = await fetch(`${API_URL}/upload`, {
         method: 'POST',
         headers: {
           Accept: 'application/json',
         },
         body: formData,
       });
-      const responseData = await uploadResponse.json();
+      const responseData = await getResponseData(uploadResponse);
 
-      if (!uploadResponse.ok || !responseData.success || !responseData.image_url) {
-        throw new Error('Unable to connect to the product server.');
+      if (!responseData?.success || !responseData.image_url) {
+        throw new Error('The image upload did not return an image URL.');
       }
 
       product.image = responseData.image_url;
-      const productResponse = await fetch(`${BACKEND_URL}/addproduct`, {
+      const productResponse = await fetch(`${API_URL}/addproduct`, {
         method: 'POST',
         headers: {
           Accept: 'application/json',
@@ -120,15 +121,19 @@ export const Addproduct = () => {
         },
         body: JSON.stringify(product),
       });
-      const data = await productResponse.json();
+      const data = await getResponseData(productResponse);
 
-      if (!productResponse.ok || !data.success) {
-        throw new Error('Unable to connect to the product server.');
+      if (!data?.success) {
+        throw new Error('The product could not be saved.');
       }
 
       alert('Product added');
-    } catch {
-      setFormError('Unable to connect to the product server.');
+      setproductDetails({ name: '', image: '', category: 'women', new_price: '', old_price: '', description: '' });
+      setimage(false);
+    } catch (error) {
+      setFormError(error.message || 'Unable to connect to the product server.');
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -181,7 +186,9 @@ export const Addproduct = () => {
         <input onChange={imagehandler} type="file" name="image" id="file-input" hidden />
       </div>
       {formError && <p className="addproduct-error" role="alert">{formError}</p>}
-      <button type="button" onClick={Add_product} className="addproduct-btn">ADD</button>
+      <button type="button" onClick={Add_product} className="addproduct-btn" disabled={isSaving}>
+        {isSaving ? 'SAVING...' : 'ADD'}
+      </button>
     </div>
   );
 };

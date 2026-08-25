@@ -1,24 +1,24 @@
 import React, { useEffect, useState } from 'react'
 import './Listproduct.css'
 import cross_icon from '../../Assets/cross_icon.png'
-
-const BACKEND_URL = 'https://quickzo.onrender.com';
+import { API_URL, getResponseData } from '../../api';
 
 export const Listproduct = () => {
   const[allproducts,setallproducts]=useState([])
   const [isLoading, setIsLoading] = useState(true);
   const [loadError, setLoadError] = useState('');
+  const [removingId, setRemovingId] = useState(null);
 
   const fetchInfo = async () => {
     setIsLoading(true);
     setLoadError('');
 
     try {
-      const response = await fetch(`${BACKEND_URL}/allproducts`);
-      const data = await response.json();
+      const response = await fetch(`${API_URL}/allproducts`);
+      const data = await getResponseData(response);
 
-      if (!response.ok || !Array.isArray(data)) {
-        throw new Error('Unable to connect to the product server.');
+      if (!Array.isArray(data)) {
+        throw new Error('The product server returned an invalid product list.');
       }
 
       setallproducts(data);
@@ -34,18 +34,20 @@ export const Listproduct = () => {
   },[])
 
   const removeProduct = async (id) => {
-    console.log(id)
-  await fetch(`${BACKEND_URL}/deleteproduct/${id}`, {
-    method: "DELETE",
-  })
-  .then((resp) => resp.json())
-  .then((data) => {
-    if (data.success) {
-      alert("Product Removed");
-      fetchInfo()
+    if (!id || !window.confirm('Remove this product?')) return;
+    setRemovingId(id);
+    setLoadError('');
+    try {
+      const response = await fetch(`${API_URL}/deleteproduct/${id}`, { method: 'DELETE' });
+      const data = await getResponseData(response);
+      if (!data?.success) throw new Error('The product could not be removed.');
+      await fetchInfo();
+    } catch (error) {
+      setLoadError(error.message || 'Unable to remove the product.');
+    } finally {
+      setRemovingId(null);
     }
-  });
-};
+  };
 
 
   return (
@@ -63,17 +65,19 @@ export const Listproduct = () => {
     </div>
     <div className="listproduct-allproducts">
       <hr />
-     {!isLoading && !loadError && allproducts.map((product,index)=>{
-      return <> <div key={index} className='listproduct-format-main listproduct-format'>
+     {!isLoading && !loadError && allproducts.map((product)=>{
+      return <React.Fragment key={product._id}> <div className='listproduct-format-main listproduct-format'>
              <img className='vishal' src={product.image} alt="" />
             <p>{product.name}</p>
             <p>${product.old_price}</p>
              <p>${product.new_price}</p>
              <p>{product.category}</p>
-             <img className='listproduct-remove-icon' onClick={()=>removeProduct(product._id)} src={cross_icon} alt="" />
+             <button className='listproduct-remove-button' onClick={()=>removeProduct(product._id)} disabled={removingId === product._id} aria-label={`Remove ${product.name}`}>
+               <img className='listproduct-remove-icon' src={cross_icon} alt="" />
+             </button>
       </div>
       <hr />
-     </>
+     </React.Fragment>
      })}
     </div>
    

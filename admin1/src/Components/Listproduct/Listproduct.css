@@ -35,6 +35,16 @@
     cursor: pointer;
     margin: auto;
 }
+.listproduct-remove-button{
+    border: 0;
+    background: transparent;
+    padding: 0;
+    cursor: pointer;
+}
+.listproduct-remove-button:disabled{
+    cursor: wait;
+    opacity: .55;
+}
 .listproduct-allproducts
 {
     overflow-y: auto;
