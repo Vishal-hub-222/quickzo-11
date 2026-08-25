@@ -97,6 +97,10 @@
     font-size: 16px;
     font-weight: 500;
 }
+.addproduct-btn:disabled{
+    cursor: wait;
+    opacity: .65;
+}
 @media (max-width:800px) {
     .add-product{
         width: auto;

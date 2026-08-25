@@ -102,6 +102,11 @@ complete variable names without exposing any credentials.
    npm run build
    ```
 
+   To use a local or different deployed API, copy `admin1/.env.example` to
+   `admin1/.env.local` and set `VITE_API_URL` to that API's URL. This value is
+   a build-time setting, so set it in the admin hosting provider before
+   deploying.
+
 ## 🔌 Backend API summary
 
 ### 🌐 Public endpoints
