@@ -5,6 +5,7 @@ import Breadcrum from '../components/Breadcrum/Breadcrum';
 import { ProductDisplay } from '../components/ProductDisplay/ProductDisplay';
 import { Description } from '../components/Description/Description'
 import { Loading } from '../components/Loading/Loading';
+import { AiRecommendations } from '../components/AiRecommendations/AiRecommendations';
 
 export const Product = () => {
   const { all_product, isProductsLoading } = useContext(ShopContext);
@@ -25,6 +26,7 @@ export const Product = () => {
     <Breadcrum product={product}/> 
     <ProductDisplay product={product}/>
     <Description/>
+    <AiRecommendations productId={product.id}/>
   </div>
   )
 }

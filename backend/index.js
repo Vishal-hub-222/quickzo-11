@@ -129,6 +129,110 @@ app.post('/generate-product-description', async (req, res) => {
 });
 
 
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY || process.env.GOOGLE_GEMINI_API_KEY;
+const GEMINI_MODEL = process.env.GEMINI_MODEL || 'gemini-2.5-flash';
+const MAX_AI_PRODUCTS = 40;
+
+const normalizeSearchText = (value) => String(value || '').trim().replace(/\s+/g, ' ');
+
+const productForAi = (product) => ({
+  id: product.id,
+  name: product.name,
+  category: product.category,
+  price: product.new_price,
+  originalPrice: product.old_price,
+  description: product.description || '',
+  available: product.avilable !== false,
+});
+
+const extractJson = (text) => {
+  const match = String(text || '').match(/\{[\s\S]*\}/);
+  if (!match) return null;
+  try { return JSON.parse(match[0]); } catch { return null; }
+};
+
+const getGeminiSuggestions = async ({ intent, products, title }) => {
+  if (!GEMINI_API_KEY) {
+    throw new Error('Gemini is not configured. Set GEMINI_API_KEY on the server.');
+  }
+
+  const inventory = products.map(productForAi);
+  const prompt = `You are a helpful ecommerce product finder. ${title}\n\nCustomer request: ${intent}\n\nOnly recommend products from this inventory JSON: ${JSON.stringify(inventory)}\n\nReturn ONLY valid JSON with this exact shape: {"summary":"one short helpful sentence","productIds":[number],"reason":"one short sentence"}. Pick 1 to 6 available product IDs. Never invent products, prices, materials, sizes, stock status, or discounts. If no product fits, use an empty productIds array and explain briefly.`;
+
+  const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(GEMINI_MODEL)}:generateContent?key=${encodeURIComponent(GEMINI_API_KEY)}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      contents: [{ parts: [{ text: prompt }] }],
+      generationConfig: {
+        temperature: 0.2,
+        responseMimeType: 'application/json',
+        maxOutputTokens: 250,
+      },
+    }),
+  });
+  const data = await response.json();
+  const text = data.candidates?.[0]?.content?.parts?.map((part) => part.text || '').join('') || '';
+  const result = extractJson(text);
+  if (!response.ok || !result || !Array.isArray(result.productIds)) {
+    console.error('Gemini product search failed:', data.error?.message || response.statusText);
+    throw new Error('Gemini could not generate recommendations.');
+  }
+
+  const byId = new Map(products.filter((product) => product.avilable !== false).map((product) => [product.id, product]));
+  const selected = [...new Set(result.productIds.map(Number))]
+    .map((id) => byId.get(id))
+    .filter(Boolean)
+    .slice(0, 6);
+
+  return {
+    summary: normalizeSearchText(result.summary) || 'Here are the closest matches from our catalog.',
+    reason: normalizeSearchText(result.reason),
+    products: selected,
+    provider: 'gemini',
+  };
+};
+
+// AI-powered natural-language product search. Gemini receives only a capped, public catalog.
+app.post('/ai-product-search', async (req, res) => {
+  const query = normalizeSearchText(req.body?.query);
+  if (query.length < 2 || query.length > 300) {
+    return res.status(400).json({ success: false, message: 'Please enter a search request between 2 and 300 characters.' });
+  }
+
+  try {
+    const products = await Product.find({}).sort({ date: -1 }).limit(MAX_AI_PRODUCTS).lean();
+    const aiResult = await getGeminiSuggestions({ intent: query, products, title: 'Find the best products for this request.' });
+    return res.json({ success: true, ...aiResult });
+  } catch (error) {
+    console.error('AI product search failed:', error.message);
+    return res.status(502).json({ success: false, message: 'AI search is temporarily unavailable. Please try again shortly.' });
+  }
+});
+
+// AI recommendations for a product detail page, based solely on the current catalog.
+app.get('/ai-recommendations/:id', async (req, res) => {
+  const productId = Number(req.params.id);
+  if (!Number.isInteger(productId)) {
+    return res.status(400).json({ success: false, message: 'Invalid product id.' });
+  }
+
+  try {
+    const products = await Product.find({}).sort({ date: -1 }).limit(MAX_AI_PRODUCTS).lean();
+    const currentProduct = products.find((product) => product.id === productId);
+    if (!currentProduct) return res.status(404).json({ success: false, message: 'Product not found.' });
+
+    const intent = `Recommend complementary or similar items for someone viewing ${currentProduct.name} (${currentProduct.category}). Do not include product ID ${currentProduct.id}.`;
+    const aiResult = await getGeminiSuggestions({ intent, products, title: 'Suggest relevant companion products.' });
+    const recommendations = aiResult.products.filter((product) => product.id !== currentProduct.id);
+    return res.json({ success: true, ...aiResult, products: recommendations });
+  } catch (error) {
+    console.error('AI recommendations failed:', error.message);
+    return res.status(502).json({ success: false, message: 'AI recommendations are temporarily unavailable. Please try again shortly.' });
+  }
+});
+
+
 // Add Product
 app.post('/addproduct', async(req,res)=>{
   try{
