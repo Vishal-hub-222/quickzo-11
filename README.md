@@ -39,6 +39,7 @@ quickzo-11/
    CLOUD_NAME=your_cloudinary_cloud_name
    CLOUD_API_KEY=your_cloudinary_api_key
    CLOUD_API_SECRET=your_cloudinary_api_secret
+   GEMINI_API_KEY=your_google_ai_studio_api_key
    ```
 
 3. Start the server:
@@ -54,7 +55,7 @@ The API will run on the port defined in `PORT`.
 Before deploying the backend, configure these environment variables in the hosting
 provider (for example, Render): `PORT`, `MONGO_URL`, `CLOUD_NAME`,
 `CLOUD_API_KEY`, and `CLOUD_API_SECRET`. Configure `OPENAI_API_KEY` as well when
-the AI product-description feature is enabled; `OPENAI_MODEL` is optional. The
+the AI product-description feature is enabled; `OPENAI_MODEL` is optional. Configure `GEMINI_API_KEY` (from Google AI Studio) to enable natural-language product search and product-page recommendations; `GEMINI_MODEL` is optional and defaults to `gemini-2.5-flash`. The
 server listens on `process.env.PORT`, so the deployed service must provide a
 valid `PORT` value. See [`backend/.env.example`](backend/.env.example) for the
 complete variable names without exposing any credentials.
@@ -114,6 +115,8 @@ complete variable names without exposing any credentials.
 - `POST /upload` – Upload product image to Cloudinary.
 - `POST /addproduct` – Add a new product.
 - `DELETE /deleteproduct/:id` – Delete a product by Mongo `_id`.
+- `POST /ai-product-search` – Gemini-powered natural-language catalog search.
+- `GET /ai-recommendations/:id` – Gemini-powered related and complementary product suggestions.
 
 ### 🔐 Authenticated endpoints (require `auth-token` header)
 
